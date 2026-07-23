@@ -30,7 +30,7 @@ connectDB();
 // ── Global Middleware ───────────────────────────────────────────────────────
 const allowedOrigins = process.env.CLIENT_ORIGIN
   ? process.env.CLIENT_ORIGIN.split(",").map((o) => o.trim())
-  : ["http://localhost:5173", "http://localhost:8080"];
+  : ["http://localhost:5173", "http://localhost:8080", "https://legacy-haven-layout.vercel.app"];
 
 app.use(
   cors({

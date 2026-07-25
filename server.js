@@ -1,6 +1,9 @@
+import dotenv from "dotenv";
+// ── Config: must run FIRST so process.env is populated before any module loads ──
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -14,9 +17,6 @@ import messageRoutes from "./routes/messages.js";
 import serviceRoutes from "./routes/services.js";
 import galleryRoutes from "./routes/gallery.js";
 import dashboardRoutes from "./routes/dashboard.js";
-
-// ── Config ──────────────────────────────────────────────────────────────────
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

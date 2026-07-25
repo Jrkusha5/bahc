@@ -14,7 +14,23 @@ const router = express.Router();
 router.get("/", getGalleryImages);
 
 // Protected — admin operations
-router.post("/", protect, upload.single("image"), uploadImage);
+// Wrap multer upload in error handler to catch Cloudinary credential / upload failures
+router.post("/", protect, (req, res, next) => {
+  upload.single("image")(req, res, (err) => {
+    if (err) {
+      // Cloudinary errors often come back as status 403 (invalid credentials) or 401
+      const statusCode = err.http_code || err.statusCode || 400;
+      const message =
+        err.message || "Image upload failed. Please check server configuration.";
+      console.error("[Gallery Upload Error]", err);
+      return res.status(statusCode).json({
+        success: false,
+        error: `Upload failed: ${message}`,
+      });
+    }
+    next();
+  });
+}, uploadImage);
 router.patch("/:id", protect, updateImage);
 router.delete("/:id", protect, deleteImage);
 

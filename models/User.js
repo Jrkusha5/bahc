@@ -8,11 +8,21 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
+    minlength: [4, "Username must be at least 4 characters"],
+    match: [/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"],
   },
   password: {
     type: String,
     required: [true, "Password is required"],
-    minlength: [6, "Password must be at least 6 characters"],
+    minlength: [8, "Password must be at least 8 characters"],
+    validate: {
+      validator: function (v) {
+        // Require at least 8 characters with 1 uppercase, 1 lowercase, 1 number, and 1 special character
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{}|;:,.<>\/]).{8,}$/.test(v);
+      },
+      message:
+        "Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters",
+    },
     select: false, // Don't return password by default
   },
   createdAt: {
@@ -36,3 +46,4 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 
 const User = mongoose.model("User", userSchema);
 export default User;
+

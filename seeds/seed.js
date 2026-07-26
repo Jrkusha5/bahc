@@ -20,8 +20,8 @@ import GalleryImage from "../models/GalleryImage.js";
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const adminUser = {
-  username: "admin",
-  password: "admin123",
+  username: "1stgate",
+  password: "1stGate!AdminKey",
 };
 
 const tours = [
@@ -206,7 +206,7 @@ const seedDB = async () => {
 
     // Seed admin user (password will be hashed by the pre-save hook)
     await User.create(adminUser);
-    console.log("👤 Admin user created (username: admin, password: admin123)");
+    console.log("👤 Admin user created (username: 1stgate, password: 1stGate!AdminKey)");
 
     // Seed tours
     await TourRequest.insertMany(tours);

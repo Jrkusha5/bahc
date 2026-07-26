@@ -92,3 +92,53 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * PUT /api/auth/change-password
+ * Change password and optionally username for current user.
+ */
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword, newUsername } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: "Current password and new password are required",
+      });
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        error: "Current password is incorrect",
+      });
+    }
+
+    if (newUsername && newUsername.trim()) {
+      user.username = newUsername.trim().toLowerCase();
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Credentials updated successfully",
+      data: {
+        username: user.username,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

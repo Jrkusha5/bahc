@@ -31,7 +31,12 @@ dist-ssr
 *.sln
 *.sw?
 
-# Server
-server/.env
-server/uploads/*
-!server/uploads/gallery/.gitkeep
+# Environment & Credentials
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Server Uploads
+uploads/*
+!uploads/gallery/.gitkeep

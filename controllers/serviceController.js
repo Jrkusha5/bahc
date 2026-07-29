@@ -45,7 +45,31 @@ export const getService = async (req, res, next) => {
  */
 export const createService = async (req, res, next) => {
   try {
-    const service = await Service.create(req.body);
+    const { title, name, description, details, text, icon, order } = req.body;
+
+    const serviceTitle = (title || name || "").trim();
+    const serviceDescription = (description || details || text || "").trim();
+
+    if (!serviceTitle || !serviceDescription) {
+      return res.status(400).json({
+        success: false,
+        error: "Service title and description are required",
+      });
+    }
+
+    // Auto-assign next order if not explicitly specified
+    let serviceOrder = order;
+    if (serviceOrder === undefined || serviceOrder === null) {
+      const maxOrderService = await Service.findOne().sort({ order: -1 });
+      serviceOrder = maxOrderService && typeof maxOrderService.order === "number" ? maxOrderService.order + 1 : 1;
+    }
+
+    const service = await Service.create({
+      title: serviceTitle,
+      description: serviceDescription,
+      icon: icon && icon.trim() ? icon.trim() : "⭐",
+      order: serviceOrder,
+    });
 
     res.status(201).json({
       success: true,
@@ -57,12 +81,21 @@ export const createService = async (req, res, next) => {
 };
 
 /**
- * PUT /api/services/:id
+ * PUT / PATCH /api/services/:id
  * Update a service (admin only).
  */
 export const updateService = async (req, res, next) => {
   try {
-    const service = await Service.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+
+    if (updateData.name && !updateData.title) {
+      updateData.title = updateData.name;
+    }
+    if ((updateData.details || updateData.text) && !updateData.description) {
+      updateData.description = updateData.details || updateData.text;
+    }
+
+    const service = await Service.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });

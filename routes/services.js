@@ -17,6 +17,7 @@ router.get("/", getServices);
 router.get("/:id", protect, getService);
 router.post("/", protect, createService);
 router.put("/:id", protect, updateService);
+router.patch("/:id", protect, updateService);
 router.delete("/:id", protect, deleteService);
 
 export default router;
